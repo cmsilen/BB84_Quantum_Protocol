@@ -1,0 +1,13 @@
+name = "Entanglement"
+uuid = "58b4d12d-b8b9-461e-9ba3-5cc1fd6afe1b"
+authors = ["Esther Kummetz"]
+version = "1.0.0-DEV"
+
+[compat]
+julia = "1.12.2"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
