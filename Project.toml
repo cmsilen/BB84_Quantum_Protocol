@@ -1,9 +1,13 @@
 name = "BB84_Protocol"
 uuid = "66345eaa-12ed-4c96-9a3f-b58dc8a2411e"
-authors = ["carlomazzanti"]
 version = "1.0.0-DEV"
+authors = ["carlomazzanti"]
+
+[deps]
+GLMakie = "e9467ef8-e4e7-5192-8a1a-b1aee30e663a"
 
 [compat]
+GLMakie = "0.13.8"
 julia = "1.12.1"
 
 [extras]
