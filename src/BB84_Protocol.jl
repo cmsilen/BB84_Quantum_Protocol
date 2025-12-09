@@ -55,6 +55,9 @@ for i in 1:num_bits_total
     end
 end
 
+println("Sifted key length: ", length(quantum_key))
+println("Sifted key: ", quantum_key)
+
 # mismatch ratio
 key_length = length(quantum_key)
 global_R_miss = length(quantum_key)/length(alice_bits)
