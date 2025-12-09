@@ -25,13 +25,17 @@ for i in 1:num_bits_total
         apply!(reg[1], H)     # switch to Hadamad basis: |+> for reg=|0> and |-> for reg=|1>
     end
 
-    #Bob measures
-    if bob_bases[i] == 1
-        measured_bit = project_traceout!(reg, 1, [X₁, X₂])
-        push!(bob_bits, measured_bit)
+    # Bob measures the qubit
+    if bob_bases[i] == 0
+        # Z-basis measurement (Computational basis)
+        meas_result = project_traceout!(reg, 1, [Z₁, Z₂])-1
     else
-        push!(bob_bits, reg[1])
+        # X-basis measurement (Hadamard basis)
+        meas_result = project_traceout!(reg, 1, [X₁, X₂])-1
     end
+
+    # Store Bob's measurement result
+    push!(bob_bits, meas_result)
     
 end
 
