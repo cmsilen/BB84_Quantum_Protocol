@@ -4,6 +4,9 @@ using GLMakie
 # paramaters
 num_bits_total = 300
 eavesdropping_event = false
+bit_flip_event = true
+phase_flip_event = false
+p = 0.1
 seed_gen = 10
 
 reg = Register(1) # We only need one qubit at a time
@@ -19,18 +22,34 @@ for i in 1:num_bits_total
     if alice_bases[i] == 0
         # Z-basis
         if alice_bits[i] == 0
-            initialize!(reg[1], Z₁) # |0⟩
+            current_qubit = Z₁  #|0⟩
         else
-            initialize!(reg[1], Z₂) # |1⟩
+            current_qubit = Z₂  #|1⟩
         end
     else
         # X-basis
         if alice_bits[i] == 0
-            initialize!(reg[1], X₁) # |+⟩
+            current_qubit = X₁ # |+⟩
         else
-            initialize!(reg[1], X₂) # |−⟩
+            current_qubit = X₂ # |−⟩
         end
     end
+
+    rho = SProjector(current_qubit)
+    if bit_flip_event & phase_flip_event
+        # both, represented by the operator XZ = Y (I hope)
+        rho_after_noise = (1 - p) * rho + p * Y * rho * Y
+    elseif bit_flip_event
+        # bit flip with probability p
+        rho_after_noise = (1 - p) * rho + p * X * rho * X
+    elseif phase_flip_event
+        # phase flip with probability p
+        rho_after_noise = (1 - p) * rho + p * Z * rho * Z
+    else
+        # no noise, pure state
+        rho_after_noise = rho
+    end
+    initialize!(reg, 1, rho_after_noise)
 
     if eavesdropping_event
         # simulate eavesdropping event
