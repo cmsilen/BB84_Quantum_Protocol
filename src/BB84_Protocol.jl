@@ -95,6 +95,16 @@ for i in 1:L_init
 end
 println("Sifted key length: ", length(alice_quantum_key))
 
+# disclosure of bits for checking if eavesdropping has occurred
+quantum_key_length = length(alice_quantum_key)
+n_disclosed_bits = Int(floor(k * quantum_key_length))
+mismatched_disclosed_bits = 0
+for i in 1:n_disclosed_bits
+    if alice_quantum_key[i] != bob_quantum_key[i]
+        mismatched_disclosed_bits += 1
+    end
+end
+println("mismatched bits found in the disclosed bits: ", mismatched_disclosed_bits)
 
 
 # ----- METRICS -----
