@@ -1,14 +1,17 @@
 using QuantumSavory
 using GLMakie
+using Random
 
 # paramaters
-num_bits_total = 300
-eavesdropping_event = false
-bit_flip_event = true
-phase_flip_event = false
-p = 0.1
-seed_gen = 10
+num_bits_total = 300            # total exchanged bits
+eavesdropping_event = false     # if there is eavesdropping in the quantum channel
+bit_flip_event = true           # if bit flip events happen
+phase_flip_event = false        # if phase flip events happen
+p = 0.1                         # probability of error in the quantum channel
+k = 0.1                         # fraction of the disclosed key for eavesdropping detection
+seed_gen = 10                   # seed for the random generator
 
+Random.seed!(seed_gen)
 reg = Register(1) # We only need one qubit at a time
 alice_bases = rand(0:1, num_bits_total) # Alice's random bases. 0 = Z-basis, 1 = X-basis
 alice_bits = rand(0:1, num_bits_total)  # Alice's random bits
