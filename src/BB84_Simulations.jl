@@ -30,7 +30,7 @@ function mismatch_ratio_experiment(eavesdropping_event, bit_flip_event, phase_fl
         X_R_miss = Float32[],
     )
     for (p, repetition) in Iterators.product(p_r, repetition_r)
-        global_R_miss, Z_R_miss, X_R_miss, P_undetected = simulate_bb84(L_init, eavesdropping_event, bit_flip_event, phase_flip_event, p, 0, 0, seed)
+        global_R_miss, Z_R_miss, X_R_miss, eve_detected = simulate_bb84(L_init, eavesdropping_event, bit_flip_event, phase_flip_event, p, 0, 0, seed)
         push!(df, (p = p,
                     repetition = repetition,
                     seed = seed,
@@ -41,6 +41,10 @@ function mismatch_ratio_experiment(eavesdropping_event, bit_flip_event, phase_fl
         seed += 1
     end
     return df
+end
+
+function probability_undetected_experiment(eavesdropping_event, bit_flip_event, phase_flip_event)
+    # TODO implement
 end
 
 
@@ -81,3 +85,9 @@ CSV.write("mismatch_ratio_experiments/mismatch_ratios_eavesdropping_phaseflip.cs
 # eavesdropping, bit and phase flip channel
 df = mismatch_ratio_experiment(true, true, true)
 CSV.write("mismatch_ratio_experiments/mismatch_ratios_eavesdropping_bitphaseflip.csv", df; delim=';')
+
+
+# ----- UNDETECTED EAVESDROPPING EXPERIMENTS -----
+# TODO how should these tests be carried out?
+# We should test in how many runs eve is detected as a function of the parameter k in all eavesdropping scenarios,
+# but some scenarios contain the channel errors, hence there also is the parameter p, should it also be in function of p?

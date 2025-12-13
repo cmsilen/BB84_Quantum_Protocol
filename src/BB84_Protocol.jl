@@ -140,7 +140,12 @@ function simulate_bb84(L_init, eavesdropping_event, bit_flip_event, phase_flip_e
     println("Z mismatch ratio: ", Z_R_miss)
     println("X mismatch ratio: ", X_R_miss)
 
-    P_undetected = 0
+    # undetected eavesdropping probability
+    # TODO check if it should be done like that (eve detected even if a single bit flips)
+    eve_detected = false
+    if mismatched_disclosed_bits > 0
+        eve_detected = true
+    end
 
-    return global_R_miss, Z_R_miss, X_R_miss, P_undetected
+    return global_R_miss, Z_R_miss, X_R_miss, eve_detected
 end
