@@ -4,7 +4,7 @@ using Random
 using DataFrames
 using CSV
 
-function simulate_bb84(L_init, eavesdropping_event, bit_flip_event, phase_flip_event, p, k, bits_mismatch_tolerance, seed_gen, verbose = false)
+function simulate_bb84(L_init, eavesdropping_event, bit_flip_event, phase_flip_event, p, k, seed_gen, verbose = false)
     Random.seed!(seed_gen)              # initializing the random bit generator
     reg = Register(1)                   # represents the quantum channel
     alice_bases = rand(0:1, L_init)     # Alice's random bases. 0 = Z-basis, 1 = X-basis
@@ -86,7 +86,9 @@ function simulate_bb84(L_init, eavesdropping_event, bit_flip_event, phase_flip_e
             end
         end
     end
-    println("Sifted key length: ", length(alice_quantum_key))
+    if verbose
+        println("Sifted key length: ", length(alice_quantum_key))
+    end
 
     # disclosure of bits for checking if eavesdropping has occurred
     quantum_key_length = length(alice_quantum_key)
@@ -97,8 +99,9 @@ function simulate_bb84(L_init, eavesdropping_event, bit_flip_event, phase_flip_e
             mismatched_disclosed_bits += 1
         end
     end
-    println("mismatched bits found in the disclosed bits: ", mismatched_disclosed_bits)
-
+    if verbose
+        println("mismatched bits found in the disclosed bits: ", mismatched_disclosed_bits)
+    end
 
     # ----- METRICS -----
     # global mismatch ratio
@@ -111,7 +114,9 @@ function simulate_bb84(L_init, eavesdropping_event, bit_flip_event, phase_flip_e
         end
     end
     global_R_miss = mismatched_bits / L_init
-    println("global mismatch ratio: ", global_R_miss)
+    if verbose
+        println("global mismatch ratio: ", global_R_miss)
+    end
 
     # Z mismatch ratio, X mismatch ratio
     # 1) ratio of mismatched bits to L_init when states are encoded in the Z basis {|0⟩, |1⟩}
@@ -137,13 +142,22 @@ function simulate_bb84(L_init, eavesdropping_event, bit_flip_event, phase_flip_e
     end
     Z_R_miss = n_Z_base_mismatch / n_Z_base
     X_R_miss = n_X_base_mismatch / n_X_base
-    println("Z mismatch ratio: ", Z_R_miss)
-    println("X mismatch ratio: ", X_R_miss)
+    if verbose
+        println("Z mismatch ratio: ", Z_R_miss)
+        println("X mismatch ratio: ", X_R_miss)
+    end
 
     # undetected eavesdropping probability
-    # TODO check if it should be done like that (eve detected even if a single bit flips)
+    # strategy: with channel noise we may expect on average p * n_disclosed_bits errors,
+    #           without channel noise even one mismatched bit will cause the eavesdropping detection
+    # TODO NOT CORRECT, IMPLEMENT USING THE RESULTS OF THE MISMATCH RATIO EXPERIMENTS
     eve_detected = false
-    if mismatched_disclosed_bits > 0
+    threshold = 1
+    n_expected_errors = Int(floor(p * n_disclosed_bits))
+    if (bit_flip_event || phase_flip_event) && eavesdropping_event
+        threshold = n_expected_errors
+    end
+    if (mismatched_disclosed_bits >= threshold) && eavesdropping_event
         eve_detected = true
     end
 
