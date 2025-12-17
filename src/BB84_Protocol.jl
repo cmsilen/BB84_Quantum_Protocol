@@ -4,6 +4,24 @@ using Random
 using DataFrames
 using CSV
 
+function initialize_reg(reg, state, bit_flip_event, phase_flip_event, p)
+    rho = SProjector(state)
+    if bit_flip_event && phase_flip_event
+        # both, represented by the operator XZ = Y (I hope)
+        rho_after_noise = (1 - p) * rho + p * Y * rho * Y
+    elseif bit_flip_event
+        # bit flip with probability p
+        rho_after_noise = (1 - p) * rho + p * X * rho * X
+    elseif phase_flip_event
+        # phase flip with probability p
+        rho_after_noise = (1 - p) * rho + p * Z * rho * Z
+    else
+        # no noise, pure state
+        rho_after_noise = rho
+    end
+    initialize!(reg, 1, rho_after_noise)
+end
+
 function simulate_bb84(L_init, eavesdropping_event, bit_flip_event, phase_flip_event, p, k, seed_gen, verbose = false)
     Random.seed!(seed_gen)              # initializing the random bit generator
     reg = Register(1)                   # represents the quantum channel
@@ -33,33 +51,19 @@ function simulate_bb84(L_init, eavesdropping_event, bit_flip_event, phase_flip_e
                 current_qubit = X₂ # |−⟩
             end
         end
-
-        rho = SProjector(current_qubit)
-        if bit_flip_event && phase_flip_event
-            # both, represented by the operator XZ = Y (I hope)
-            rho_after_noise = (1 - p) * rho + p * Y * rho * Y
-        elseif bit_flip_event
-            # bit flip with probability p
-            rho_after_noise = (1 - p) * rho + p * X * rho * X
-        elseif phase_flip_event
-            # phase flip with probability p
-            rho_after_noise = (1 - p) * rho + p * Z * rho * Z
-        else
-            # no noise, pure state
-            rho_after_noise = rho
-        end
-        initialize!(reg, 1, rho_after_noise)
+        initialize_reg(reg, current_qubit, bit_flip_event, phase_flip_event, p)
 
         if eavesdropping_event
             # simulate eavesdropping event
             if eves_bases[i] == 0
                 eves_result = project_traceout!(reg, 1, [Z₁, Z₂]) - 1   # -1 to convert from 1/2 to 0/1
-                initialize!(reg[1], eves_result == 0 ? Z₁ : Z₂)         # depending on the outcome the qubit gets initialized
+                current_qubit = eves_result == 0 ? Z₁ : Z₂              # depending on the outcome the qubit gets initialized
             else
                 eves_result = project_traceout!(reg, 1, [X₁, X₂]) - 1
-                initialize!(reg[1], eves_result == 0 ? X₁ : X₂)
+                current_qubit = eves_result == 0 ? X₁ : X₂
             end
             push!(eves_bits, eves_result)
+            initialize_reg(reg, current_qubit, bit_flip_event, phase_flip_event, p)
         end
 
         # Bob measures the qubit
@@ -147,17 +151,38 @@ function simulate_bb84(L_init, eavesdropping_event, bit_flip_event, phase_flip_e
         println("X mismatch ratio: ", X_R_miss)
     end
 
-    # undetected eavesdropping probability
-    # strategy: with channel noise we may expect on average p * n_disclosed_bits errors,
-    #           without channel noise even one mismatched bit will cause the eavesdropping detection
-    # TODO NOT CORRECT, IMPLEMENT USING THE RESULTS OF THE MISMATCH RATIO EXPERIMENTS
+    # undetected eavesdropping probability TODO REFINE BECAUSE TOO MUCH FALSE POSITIVES
+    # events legend:
+    #       E: error on a bit of the key (so  it is already in the same base for both alice and bob)
+    #       Z: the common base is Z
+    #       X: the common base is X
+    #       BF: bit flip has occurred
+    #       PF: phase flip has occurred
+    #       BPF: both flips have occurred
+    #
+    # case bit flip:
+    #       P{E} = P{E | Z, BF} * P{Z} * P{BF} + P{E | X, BF} * P{X} * P{BF} = 1 * 1/2 * p + 0 * 1/2 * p = p/2
+    # case phase flip:
+    #       P{E} = P{E | Z, PF} * P{Z} * P{PF} + P{E | X, PF} * P{X} * P{PF} = 0 * 1/2 * p + 1 * 1/2 * p = p/2
+    # case both:
+    #       P{E} = P{E | Z, BPF} * P{Z} * P{PBPFF} + P{E | X, BPF} * P{X} * P{BPF} = 1 * 1/2 * p + 1 * 1/2 * p = p
+    #
+    # so on average, given n_disclosed_bits disclosed bits, we expect n_disclosed_bits * P{E} mismatched bits due to channel errors
     eve_detected = false
-    threshold = 1
-    n_expected_errors = Int(floor(p * n_disclosed_bits))
-    if (bit_flip_event || phase_flip_event) && eavesdropping_event
-        threshold = n_expected_errors
+    threshold = 0
+    if (!bit_flip_event && phase_flip_event) || (bit_flip_event && !phase_flip_event)
+        threshold = Int(floor(n_disclosed_bits * p / 2))
+    elseif bit_flip_event && phase_flip_event
+        threshold = Int(floor(n_disclosed_bits * p))
     end
-    if (mismatched_disclosed_bits >= threshold) && eavesdropping_event
+    if verbose
+        print(mismatched_disclosed_bits)
+        print("/")
+        print(n_disclosed_bits)
+        print(" ")
+        println(threshold)
+    end
+    if mismatched_disclosed_bits > threshold
         eve_detected = true
     end
 
