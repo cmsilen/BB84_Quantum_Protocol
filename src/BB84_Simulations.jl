@@ -11,8 +11,8 @@ include("BB84_Protocol.jl")
 # GLOBAL PARAMETERS
 seed =                          0               # initial seed
 L_init =                        300             # total exchanged bits
-do_mismatch_experiments =       false
-do_undetected_experiments =     true
+do_mismatch_experiments =       true
+do_undetected_experiments =     false
 
 # MISMATCH RATIO EXPERIMENT
 p_r_mr =                        0.0:0.1:1.0     # probability of error in the quantum channel

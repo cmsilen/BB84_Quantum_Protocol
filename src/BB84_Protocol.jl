@@ -38,29 +38,26 @@ function simulate_bb84(L_init, eavesdropping_event, bit_flip_event, phase_flip_e
         # Alice prepares the qubit
         if alice_bases[i] == 0
             # Z-basis
-            if alice_bits[i] == 0
-                current_qubit = Z₁  #|0⟩
-            else
-                current_qubit = Z₂  #|1⟩
-            end
+            current_qubit = (alice_bits[i] == 0) ? Z₁ : Z₂
         else
             # X-basis
-            if alice_bits[i] == 0
-                current_qubit = X₁ # |+⟩
-            else
-                current_qubit = X₂ # |−⟩
-            end
+            current_qubit = (alice_bits[i] == 0) ? X₁ : X₂
         end
-        initialize_reg(reg, current_qubit, bit_flip_event, phase_flip_event, p)
+        if eavesdropping_event
+            # initialize without noise
+            initialize_reg(reg, current_qubit, false, false, p)
+        else
+            initialize_reg(reg, current_qubit, bit_flip_event, phase_flip_event, p)
+        end
 
         if eavesdropping_event
             # simulate eavesdropping event
             if eves_bases[i] == 0
                 eves_result = project_traceout!(reg, 1, [Z₁, Z₂]) - 1   # -1 to convert from 1/2 to 0/1
-                current_qubit = eves_result == 0 ? Z₁ : Z₂              # depending on the outcome the qubit gets initialized
+                current_qubit = (eves_result == 0) ? Z₁ : Z₂              # depending on the outcome the qubit gets initialized
             else
                 eves_result = project_traceout!(reg, 1, [X₁, X₂]) - 1
-                current_qubit = eves_result == 0 ? X₁ : X₂
+                current_qubit = (eves_result == 0) ? X₁ : X₂
             end
             push!(eves_bits, eves_result)
             initialize_reg(reg, current_qubit, bit_flip_event, phase_flip_event, p)
