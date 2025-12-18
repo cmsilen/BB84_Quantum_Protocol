@@ -9,19 +9,20 @@ include("BB84_Protocol.jl")
 
 # ----- DEFINING PARAMETERS RANGES -----
 # GLOBAL PARAMETERS
-seed =                          0               # initial seed
+seed =                          1000            # initial seed
 L_init =                        300             # total exchanged bits
-do_mismatch_experiments =       true
-do_undetected_experiments =     false
+do_mismatch_experiments =       false
+do_undetected_experiments =     true
+do_false_positives =            false
 
 # MISMATCH RATIO EXPERIMENT
 p_r_mr =                        0.0:0.1:1.0     # probability of error in the quantum channel
 repetition_r_mr =               1:1:1000        # how many times an experiment must be carried out
 
 # PROBABILITY OF UNDETECTED EAVESDROPPING EXPERIMENT
-p_pu =                          0.70            # probability of error in the quantum channel
+p_pu =                          0.20            # probability of error in the quantum channel
 k_r_pu =                        0.1:0.1:1.0     # fraction of the disclosed key for eavesdropping detection
-repetition_r_pu =               1:1:1000        # how many times an experiment must be carried out
+repetition_r_pu =               1:1:10000       # how many times an experiment must be carried out
 
 function mismatch_ratio_experiment(eavesdropping_event, bit_flip_event, phase_flip_event)
     global seed
@@ -170,8 +171,10 @@ if do_undetected_experiments
     df = probability_undetected_experiment(true, true, true)
     CSV.write("undetected_eavesdropping_experiments/probability_undetected_bitphaseflip.csv", df; delim=';')
     println("P_und bit phase flip done")
+end
 
-    # check how frequently false positives occur
+# check how frequently false positives occur (relative to the eavesdropping detection)
+if do_false_positives
     df = probability_undetected_experiment(false, false, false)
     CSV.write("undetected_eavesdropping_experiments/probability_falsepositive_ideal.csv", df; delim=';')
     df = probability_undetected_experiment(false, true, false)
@@ -181,3 +184,7 @@ if do_undetected_experiments
     df = probability_undetected_experiment(false, true, true)
     CSV.write("undetected_eavesdropping_experiments/probability_falsepositive_bitphaseflip.csv", df; delim=';')
 end
+
+
+# ----- EFFECTS OF L_init VARIATION -----
+# TODO
