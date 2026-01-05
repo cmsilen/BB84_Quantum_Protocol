@@ -148,7 +148,7 @@ function simulate_bb84(L_init, eavesdropping_event, bit_flip_event, phase_flip_e
         println("X mismatch ratio: ", X_R_miss)
     end
 
-    # undetected eavesdropping probability TODO REFINE BECAUSE TOO MUCH FALSE POSITIVES
+    # undetected eavesdropping probability
     # events legend:
     #       E: error on a bit of the key (so  it is already in the same base for both alice and bob)
     #       Z: the common base is Z
