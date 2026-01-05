@@ -153,9 +153,6 @@ function simulate_bb84(L_init, eavesdropping_event, bit_flip_event, phase_flip_e
     #       E: error on a bit of the key (so  it is already in the same base for both alice and bob)
     #       Z: the common base is Z
     #       X: the common base is X
-    #       BF: bit flip has occurred
-    #       PF: phase flip has occurred
-    #       BPF: both flips have occurred
     #
     # case bit flip:
     #       P{E} = P{E | Z} * P{Z}+ P{E | X} * P{X} = p * 1/2 + 0 * 1/2 = p/2
