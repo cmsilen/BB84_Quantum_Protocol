@@ -158,11 +158,11 @@ function simulate_bb84(L_init, eavesdropping_event, bit_flip_event, phase_flip_e
     #       BPF: both flips have occurred
     #
     # case bit flip:
-    #       P{E} = P{E | Z, BF} * P{Z} * P{BF} + P{E | X, BF} * P{X} * P{BF} = 1 * 1/2 * p + 0 * 1/2 * p = p/2
+    #       P{E} = P{E | Z} * P{Z}+ P{E | X} * P{X} = p * 1/2 + 0 * 1/2 = p/2
     # case phase flip:
-    #       P{E} = P{E | Z, PF} * P{Z} * P{PF} + P{E | X, PF} * P{X} * P{PF} = 0 * 1/2 * p + 1 * 1/2 * p = p/2
+    #       P{E} = P{E | Z} * P{Z} + P{E | X} * P{X} = 0 * 1/2 + p * 1/2 = p/2
     # case both:
-    #       P{E} = P{E | Z, BPF} * P{Z} * P{PBPFF} + P{E | X, BPF} * P{X} * P{BPF} = 1 * 1/2 * p + 1 * 1/2 * p = p
+    #       P{E} = P{E | Z} * P{Z} + P{E | X} * P{X} = 1 * 1/2 * p + 1 * 1/2 * p = p
     #
     # so on average, given n_disclosed_bits disclosed bits, we expect n_disclosed_bits * P{E} mismatched bits due to channel errors
     eve_detected = false
