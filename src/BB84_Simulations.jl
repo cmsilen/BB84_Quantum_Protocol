@@ -16,7 +16,7 @@ do_mismatch_experiments =               false
 do_undetected_experiments =             false
 do_false_positives =                    false
 do_key_length_mismatch_experiments =    false
-do_key_length_undetected_experiments =  true
+do_key_length_undetected_experiments =  false
 
 # MISMATCH RATIO EXPERIMENT
 p_r_mr =                                0.0:0.1:1.0             # probability of error in the quantum channel
@@ -73,7 +73,7 @@ if do_mismatch_experiments
     println("ratio eavesdropping, bit flip done")
 
     # eavesdropping, phase flip channel
-    df = mismatch_ratio_experiment(true, true, false, seed, L_init, p_r_mr, repetition_r_mr)
+    df = mismatch_ratio_experiment(true, false, true, seed, L_init, p_r_mr, repetition_r_mr)
     CSV.write("results/mismatch_ratio_experiments/mismatch_ratios_eavesdropping_phaseflip.csv", df; delim=';')
     println("ratio eavesdropping, phase flip done")
 

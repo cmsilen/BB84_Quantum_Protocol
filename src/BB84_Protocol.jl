@@ -7,7 +7,7 @@ using CSV
 function initialize_reg(reg, state, bit_flip_event, phase_flip_event, p)
     rho = SProjector(state)
     if bit_flip_event && phase_flip_event
-        # both, represented by the operator XZ = Y (I hope)
+        # both, represented by the operator XZ = Y
         rho_after_noise = (1 - p) * rho + p * Y * rho * Y
     elseif bit_flip_event
         # bit flip with probability p
