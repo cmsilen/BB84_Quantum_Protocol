@@ -50,6 +50,7 @@ def simulate_bb84(L_init, eavesdropping_event, bit_flip_event, phase_flip_event,
     noise_model = NoiseModel()
     noise_model.add_all_qubit_quantum_error(channel_error, ['id'])
 
+    # ----- SIMULATION START -----
     # starting simulations for each bit to send
     for i in range(L_init):
         # quantum channel where Alice sends the qubit, if there is eavesdropping it will be connected to Eve,
@@ -66,7 +67,7 @@ def simulate_bb84(L_init, eavesdropping_event, bit_flip_event, phase_flip_event,
 
         # initializing the simulator and quantum circuit
         sim = None
-        if eavesdropping_event:
+        if bit_flip_event or phase_flip_event:
             sim = AerSimulator(noise_model=noise_model, seed_simulator=seed_gen)
         else:
             sim = AerSimulator(seed_simulator=seed_gen)
@@ -100,13 +101,12 @@ def simulate_bb84(L_init, eavesdropping_event, bit_flip_event, phase_flip_event,
                 channel_circuit.h(eavesdropper_channel[0])
 
         # applying noise to the currently active channel by applying the id gate
-        if bit_flip_event or phase_flip_event:
-            if eavesdropping_event and (bit_flip_event or phase_flip_event):
-                channel_circuit.id(eavesdropper_channel[0])
-            elif bit_flip_event or phase_flip_event:
-                channel_circuit.id(channel[0])
+        if eavesdropping_event and (bit_flip_event or phase_flip_event):
+            channel_circuit.id(eavesdropper_channel[0])
+        elif bit_flip_event or phase_flip_event:
+            channel_circuit.id(channel[0])
 
-        # bob's measurement
+        # bob's measurement (same procedure that Eve did)
         if eavesdropping_event:
             if bob_basis[i] == "X":
                 channel_circuit.h(eavesdropper_channel[0])
@@ -116,11 +116,16 @@ def simulate_bb84(L_init, eavesdropping_event, bit_flip_event, phase_flip_event,
                 channel_circuit.h(channel[0])
             channel_circuit.measure(channel[0], bob_measurement[0])
 
+        # save the first simulation's circuit layout
         if i == 0:
             channel_circuit.draw(output='mpl', filename='circuito_bb84.png')
         result = sim.run(channel_circuit, shots=1).result()
 
-        # extracting measurement outcomes
+        # extracting measurement outcomes for both Eve and Bob, Qiskit will return a dict with a key for each
+        # overall measurement outcome, since we have only one shot for the simulation, we can just get the first key
+        # and parse it
+        # example of key:
+        #   "0 1"   ->  Bob measured 0, Eve measured 1
         counts = result.get_counts(channel_circuit)
         measured_bitstring = list(counts.keys())[0]
         if eavesdropping_event:
@@ -132,8 +137,11 @@ def simulate_bb84(L_init, eavesdropping_event, bit_flip_event, phase_flip_event,
             bob_outcome = int(measured_bitstring[0])
             bob_bits.append(bob_outcome)
 
+        # change seed for the following simulations
         seed_gen + 1
 
+
+    # ----- SIMULATION END -----
     if verbose:
         print("Alice's bits:\t", alice_bits)
         print("Alice's basis:\t", alice_basis)
@@ -142,7 +150,8 @@ def simulate_bb84(L_init, eavesdropping_event, bit_flip_event, phase_flip_event,
         print("Eve's bits:\t", eve_bits)
         print("Eve's basis:\t", eve_basis)
 
-    # QUANTUM KEY DERIVATION
+    # ----- QUANTUM KEY DERIVATION -----
+    # sift the key by taking only the bits correspondant to the same basis (between Alice and Bob)
     for i in range(L_init):
         if alice_basis[i] == bob_basis[i]:
             alice_quantum_key.append(alice_bits[i])
@@ -152,7 +161,8 @@ def simulate_bb84(L_init, eavesdropping_event, bit_flip_event, phase_flip_event,
         print("Bob's quantum key:\t", bob_quantum_key)
         print("Key length:\t", len(alice_quantum_key))
 
-    # PARTIAL QUANTUM KEY DISCLOSURE FOR EAVESDROPPING DETECTION
+    # ----- PARTIAL QUANTUM KEY DISCLOSURE FOR EAVESDROPPING DETECTION -----
+    # disclose k * (length of quantum key) bits to check how many bits mismatch
     n_disclosed_bits = int(len(alice_quantum_key) * k)
     n_mismatched_key_bits = 0
     for i in range(n_disclosed_bits):
@@ -161,7 +171,7 @@ def simulate_bb84(L_init, eavesdropping_event, bit_flip_event, phase_flip_event,
     if verbose:
         print("mismatched disclosed key bits:\t", n_mismatched_key_bits)
 
-    # COMPUTATIONS OF RATIOS
+    # ----- COMPUTATIONS OF RATIOS -----
     # counting mismatches
     global_mismatch_count = 0
     z_mismatch_count = 0
@@ -191,8 +201,10 @@ def simulate_bb84(L_init, eavesdropping_event, bit_flip_event, phase_flip_event,
         print("X mismatch ratio:\t", x_mismatch_ratio)
         print("Mismatched bits:\t", global_mismatch_count)
 
-    # EAVESDROPPING DETECTION
-    # computing threshold
+    # ----- EAVESDROPPING DETECTION -----
+    # computing threshold by considering the average amount of mismatched bits that we expect by considering
+    # the error probability p. If the threshold is lower than the amount of mismatched disclosed bits, we
+    # conclude that eavesdropping has taken place
     threshold = 0
     eve_detected = False
     if (not bit_flip_event and phase_flip_event) or (bit_flip_event and not phase_flip_event):
@@ -207,5 +219,5 @@ def simulate_bb84(L_init, eavesdropping_event, bit_flip_event, phase_flip_event,
 
     return global_mismatch_ratio, z_mismatch_ratio, x_mismatch_ratio, eve_detected
 
-res = simulate_bb84(300, True, False, False, 1, 1, 1, True)
+res = simulate_bb84(300, False, False, False, 1, 1, 1, True)
 print(res)
