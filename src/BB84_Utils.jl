@@ -1,3 +1,23 @@
+using Statistics
+using DataFrames
+using Distributions
+
+# for getting the confidence intervals (99%)
+function mean_ci_normal(x; α=0.01)
+    n = length(x)
+    μ = mean(x)
+    σ = std(x)
+    z = quantile(Normal(), 1 - α/2)
+    hw = z * σ / sqrt(n)
+
+    return (
+        mean  = μ,
+        lower = - hw,
+        upper = + hw
+    )
+end
+
+
 function mismatch_ratio_experiment(eavesdropping_event, bit_flip_event, phase_flip_event, seed, L_init, p_r, repetition_r)
     # data frame for keeping intermediate results
     df = DataFrame(
@@ -25,9 +45,15 @@ function mismatch_ratio_experiment(eavesdropping_event, bit_flip_event, phase_fl
     # compute the mean value of each experiment
     df_mean = combine(
         groupby(df, :p),
-        :global_R_miss => mean => :global_R_miss_mean,
-        :Z_R_miss      => mean => :Z_R_miss_mean,
-        :X_R_miss      => mean => :X_R_miss_mean,
+
+        :global_R_miss => (x -> mean_ci_normal(x)) =>
+            [:global_R_miss_mean, :global_R_miss_lower, :global_R_miss_upper],
+
+        :Z_R_miss => (x -> mean_ci_normal(x)) =>
+            [:Z_R_miss_mean, :Z_R_miss_lower, :Z_R_miss_upper],
+
+        :X_R_miss => (x -> mean_ci_normal(x)) =>
+            [:X_R_miss_mean, :X_R_miss_lower, :X_R_miss_upper],
     )
     return df_mean
 end
@@ -57,7 +83,8 @@ function probability_undetected_experiment(eavesdropping_event, bit_flip_event, 
     # probability by averaging the 0s and 1s in detected column
     df_mean = combine(
         groupby(df, [:k]),
-        :undetected => mean => :P_undetect
+        :undetected => (x -> mean_ci_normal(x)) =>
+            [:undetected_mean, :undetected_lower, :undetected_upper]
     )
     return df_mean
 end
