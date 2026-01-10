@@ -1,3 +1,5 @@
+import os
+
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
@@ -7,7 +9,16 @@ import numpy as np
 # =========================
 CSV_PATH_MISMATCH = "results/mismatch_ratio_experiments"
 CSV_PATH_UNDETECTED = "results/undetected_eavesdropping_experiments"
+SAVE_PATH = "plots"
+os.makedirs(SAVE_PATH, exist_ok=True)
+
 MISMATCH_LABELS = [
+    "ideal",
+    "bit flip",
+    "phase flip",
+    "bit-phase flip"
+]
+UNDETECTED_LABELS = [
     "ideal",
     "bit flip",
     "phase flip",
@@ -93,7 +104,7 @@ plot_ci(
     "Channel error probability",
     "Global mismatch",
     MISMATCH_LABELS,
-    "mismatch_noeavesdropping_global.png",
+    f"{SAVE_PATH}/mismatch_noeavesdropping_global.png",
 )
 
 # =========================
@@ -108,7 +119,7 @@ plot_ci(
     "Channel error probability",
     "Z basis mismatch",
     MISMATCH_LABELS,
-    "mismatch_noeavesdropping_Z.png",
+    f"{SAVE_PATH}/mismatch_noeavesdropping_Z.png",
 )
 
 # =========================
@@ -123,7 +134,7 @@ plot_ci(
     "Channel error probability",
     "X basis mismatch",
     MISMATCH_LABELS,
-    "mismatch_noeavesdropping_X.png",
+    f"{SAVE_PATH}/mismatch_noeavesdropping_X.png",
 )
 
 # =========================
@@ -138,7 +149,7 @@ plot_ci(
     "Channel error probability",
     "Global mismatch",
     MISMATCH_LABELS,
-    "mismatch_eavesdropping_global.png",
+    f"{SAVE_PATH}/mismatch_eavesdropping_global.png",
 )
 
 # =========================
@@ -153,7 +164,7 @@ plot_ci(
     "Channel error probability",
     "Z basis mismatch",
     MISMATCH_LABELS,
-    "mismatch_eavesdropping_Z.png",
+    f"{SAVE_PATH}/mismatch_eavesdropping_Z.png",
 )
 
 # =========================
@@ -168,7 +179,7 @@ plot_ci(
     "Channel error probability",
     "X basis mismatch",
     MISMATCH_LABELS,
-    "mismatch_eavesdropping_X.png",
+    f"{SAVE_PATH}/mismatch_eavesdropping_X.png",
 )
 
 # =========================
@@ -182,8 +193,8 @@ plot_ci(
     "undetected_upper",
     "Fraction of the disclosed key",
     "Probability of undetected eavesdropping",
-    MISMATCH_LABELS,
-    "undetected.png",
+    UNDETECTED_LABELS,
+    f"{SAVE_PATH}/undetected.png",
 )
 
 print("Plots generated successfully.")
