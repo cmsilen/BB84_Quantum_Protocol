@@ -8,7 +8,7 @@ from qiskit_aer import AerSimulator
 from qiskit_aer.noise import pauli_error, NoiseModel
 
 
-def simulate_bb84(L_init, eavesdropping_event, bit_flip_event, phase_flip_event, p, k, seed_gen, verbose=False):
+def simulate_bb84(L_init, eavesdropping_event, bit_flip_event, phase_flip_event, p, k, seed_gen, verbose=False, save_figure=False):
     # initializing the random bit generator, qiskit random bit generator is initialized for each simulation
     random.seed(seed_gen)
     np.random.seed(seed_gen)
@@ -117,7 +117,7 @@ def simulate_bb84(L_init, eavesdropping_event, bit_flip_event, phase_flip_event,
             channel_circuit.measure(channel[0], bob_measurement[0])
 
         # save the first simulation's circuit layout
-        if i == 0:
+        if i == 0 and save_figure:
             channel_circuit.draw(output='mpl', filename='circuito_bb84.png')
         result = sim.run(channel_circuit, shots=1).result()
 
@@ -218,6 +218,3 @@ def simulate_bb84(L_init, eavesdropping_event, bit_flip_event, phase_flip_event,
         print("Eve detected:\t", eve_detected)
 
     return global_mismatch_ratio, z_mismatch_ratio, x_mismatch_ratio, eve_detected
-
-res = simulate_bb84(300, False, False, False, 1, 1, 1, True)
-print(res)
