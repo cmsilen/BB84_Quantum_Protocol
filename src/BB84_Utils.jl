@@ -70,7 +70,7 @@ function probability_undetected_experiment(eavesdropping_event, bit_flip_event, 
 
     # starting experiments, error probability fixed
     for (k, repetition) in Iterators.product(k_r, repetition_r)
-        global_R_miss, Z_R_miss, X_R_miss, eve_detected = simulate_bb84(L_init, eavesdropping_event, bit_flip_event, phase_flip_event, p_pu, k, seed[])
+        global_R_miss, Z_R_miss, X_R_miss, eve_detected = simulate_bb84(L_init, eavesdropping_event, bit_flip_event, phase_flip_event, p, k, seed[])
         push!(df, (p = p,
                     k = k,
                     repetition = repetition,
