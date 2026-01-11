@@ -218,3 +218,5 @@ def simulate_bb84(L_init, eavesdropping_event, bit_flip_event, phase_flip_event,
         print("Eve detected:\t", eve_detected)
 
     return global_mismatch_ratio, z_mismatch_ratio, x_mismatch_ratio, eve_detected
+
+simulate_bb84(300, False, True, True, 0.1, 0, 1, False, True)
