@@ -138,7 +138,7 @@ def simulate_bb84(L_init, eavesdropping_event, bit_flip_event, phase_flip_event,
             bob_bits.append(bob_outcome)
 
         # change seed for the following simulations
-        seed_gen + 1
+        seed_gen += 1
 
 
     # ----- SIMULATION END -----
@@ -208,15 +208,15 @@ def simulate_bb84(L_init, eavesdropping_event, bit_flip_event, phase_flip_event,
     threshold = 0
     eve_detected = False
     if (not bit_flip_event and phase_flip_event) or (bit_flip_event and not phase_flip_event):
-        threshold = int(len(alice_quantum_key) * (p / 2))
+        threshold = int(n_disclosed_bits * (p / 2))
     elif bit_flip_event and phase_flip_event:
-        threshold = int(len(alice_quantum_key) * p)
+        threshold = int(n_disclosed_bits * p)
     if n_mismatched_key_bits > threshold:
         eve_detected = True
 
     if verbose:
+        print("Disclosed bits:\t\t", n_disclosed_bits)
+        print("Threshold:\t\t", threshold)
         print("Eve detected:\t", eve_detected)
 
     return global_mismatch_ratio, z_mismatch_ratio, x_mismatch_ratio, eve_detected
-
-simulate_bb84(300, False, True, True, 0.1, 0, 1, False, True)
