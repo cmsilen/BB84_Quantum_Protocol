@@ -5,10 +5,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # =========================
-# Configurazione
+# Configs
 # =========================
 CSV_PATH_MISMATCH = "results/mismatch_ratio_experiments"
 CSV_PATH_UNDETECTED = "results/undetected_eavesdropping_experiments"
+CSV_PATH_LINIT = "results/L_init_experiments"
 SAVE_PATH = "plots"
 os.makedirs(SAVE_PATH, exist_ok=True)
 
@@ -24,6 +25,19 @@ UNDETECTED_LABELS = [
     "phase flip",
     "bit-phase flip"
 ]
+MISMATCH_LINIT_LABELS = [
+    "L_init = 100",
+    "L_init = 300",
+    "L_init = 700",
+    "L_init = 1000"
+]
+UNDETECTED_LINIT_LABELS = [
+    "L_init = 100",
+    "L_init = 300",
+    "L_init = 700",
+    "L_init = 1000"
+]
+
 CSVS_MISMATCH_NOEAVESDROPPING = [
     "mismatch_ratios_ideal.csv",
     "mismatch_ratios_bitflip.csv",
@@ -42,6 +56,18 @@ CSVS_UNDETECTED = [
     "probability_undetected_phaseflip.csv",
     "probability_undetected_bitphaseflip.csv"
 ]
+CSVS_LINIT_MISMATCH = [
+    "mismatch_ratios_bitphaseflip_100.csv",
+    "mismatch_ratios_bitphaseflip_300.csv",
+    "mismatch_ratios_bitphaseflip_700.csv",
+    "mismatch_ratios_bitphaseflip_1000.csv"
+]
+CSVS_LINIT_UNDETECTED = [
+    "probability_undetected_ideal_100.csv",
+    "probability_undetected_bitflip_300.csv",
+    "probability_undetected_phaseflip_700.csv",
+    "probability_undetected_bitphaseflip_1000.csv"
+]
 
 ALPHA = 0.25                  # trasparenza banda
 
@@ -59,6 +85,16 @@ df_array_undetected = []
 for csv in CSVS_UNDETECTED:
     df = pd.read_csv(f"{CSV_PATH_UNDETECTED}/{csv}", sep=";")
     df_array_undetected.append(df)
+
+df_array_mismatch_L_init = []
+for csv in CSVS_LINIT_MISMATCH:
+    df = pd.read_csv(f"{CSV_PATH_LINIT}/{csv}", sep=";")
+    df_array_mismatch_L_init.append(df)
+
+df_array_undetected_L_init = []
+for csv in CSVS_LINIT_UNDETECTED:
+    df = pd.read_csv(f"{CSV_PATH_LINIT}/{csv}", sep=";")
+    df_array_undetected_L_init.append(df)
 
 # =========================
 # Funzione di plotting
@@ -195,6 +231,36 @@ plot_ci(
     "Probability of undetected eavesdropping",
     UNDETECTED_LABELS,
     f"{SAVE_PATH}/undetected.png",
+)
+
+# =========================
+# Global eavesdropping L_init variations
+# =========================
+plot_ci(
+    df_array_mismatch_L_init,
+    "p",
+    "global_R_miss_mean",
+    "global_R_miss_lower",
+    "global_R_miss_upper",
+    "Channel error probability",
+    "Global mismatch",
+    MISMATCH_LINIT_LABELS,
+    f"{SAVE_PATH}/mismatch_L_init_eavesdropping_global.png",
+)
+
+# =========================
+# Undetected eavesdropping L_init variations
+# =========================
+plot_ci(
+    df_array_undetected_L_init,
+    "k",
+    "undetected_mean",
+    "undetected_lower",
+    "undetected_upper",
+    "Fraction of the disclosed key",
+    "Probability of undetected eavesdropping",
+    UNDETECTED_LINIT_LABELS,
+    f"{SAVE_PATH}/undetected_L_init_.png",
 )
 
 print("Plots generated successfully.")

@@ -12,10 +12,10 @@ include("BB84_Utils.jl")
 seed =                                  Ref(1000)               # initial seed
 L_init =                                300                     # total exchanged bits
 do_mismatch_experiments =               false
-do_undetected_experiments =             true
+do_undetected_experiments =             false
 do_false_positives =                    false
-do_key_length_mismatch_experiments =    false
-do_key_length_undetected_experiments =  false
+do_key_length_mismatch_experiments =    true
+do_key_length_undetected_experiments =  true
 
 # MISMATCH RATIO EXPERIMENT
 p_r_mr =                                0.0:0.1:1.0             # probability of error in the quantum channel
@@ -27,7 +27,7 @@ k_r_pu =                                0.1:0.1:1.0             # fraction of th
 repetition_r_pu =                       1:1:10000               # how many times an experiment must be carried out
 
 # EFFECTS OF KEY LENGTH VARIATIONS EXPERIMENT
-L_init_r_lv =                           [700, 1000]   # what L_init values should be used [100, 300, 700, 1000]
+L_init_r_lv =                           [100, 300, 700, 1000]
 
 
 # create folders if not existent
