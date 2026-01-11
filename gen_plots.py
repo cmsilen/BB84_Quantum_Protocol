@@ -13,6 +13,10 @@ CSV_PATH_LINIT = "results/L_init_experiments"
 SAVE_PATH = "plots"
 os.makedirs(SAVE_PATH, exist_ok=True)
 
+do_mismatch = True
+do_undetected = True
+do_Linit = False
+
 MISMATCH_LABELS = [
     "ideal",
     "bit flip",
@@ -72,29 +76,34 @@ CSVS_LINIT_UNDETECTED = [
 ALPHA = 0.25                  # trasparenza banda
 
 df_array_mismatch_noeavesdropping = []
-for csv in CSVS_MISMATCH_NOEAVESDROPPING:
-    df = pd.read_csv(f"{CSV_PATH_MISMATCH}/{csv}", sep=";")
-    df_array_mismatch_noeavesdropping.append(df)
+if do_mismatch:
+    for csv in CSVS_MISMATCH_NOEAVESDROPPING:
+        df = pd.read_csv(f"{CSV_PATH_MISMATCH}/{csv}", sep=";")
+        df_array_mismatch_noeavesdropping.append(df)
 
 df_array_mismatch_eavesdropping = []
-for csv in CSVS_MISMATCH_EAVESDROPPING:
-    df = pd.read_csv(f"{CSV_PATH_MISMATCH}/{csv}", sep=";")
-    df_array_mismatch_eavesdropping.append(df)
+if do_mismatch:
+    for csv in CSVS_MISMATCH_EAVESDROPPING:
+        df = pd.read_csv(f"{CSV_PATH_MISMATCH}/{csv}", sep=";")
+        df_array_mismatch_eavesdropping.append(df)
 
 df_array_undetected = []
-for csv in CSVS_UNDETECTED:
-    df = pd.read_csv(f"{CSV_PATH_UNDETECTED}/{csv}", sep=";")
-    df_array_undetected.append(df)
+if do_undetected:
+    for csv in CSVS_UNDETECTED:
+        df = pd.read_csv(f"{CSV_PATH_UNDETECTED}/{csv}", sep=";")
+        df_array_undetected.append(df)
 
 df_array_mismatch_L_init = []
-for csv in CSVS_LINIT_MISMATCH:
-    df = pd.read_csv(f"{CSV_PATH_LINIT}/{csv}", sep=";")
-    df_array_mismatch_L_init.append(df)
+if do_Linit:
+    for csv in CSVS_LINIT_MISMATCH:
+        df = pd.read_csv(f"{CSV_PATH_LINIT}/{csv}", sep=";")
+        df_array_mismatch_L_init.append(df)
 
 df_array_undetected_L_init = []
-for csv in CSVS_LINIT_UNDETECTED:
-    df = pd.read_csv(f"{CSV_PATH_LINIT}/{csv}", sep=";")
-    df_array_undetected_L_init.append(df)
+if do_Linit:
+    for csv in CSVS_LINIT_UNDETECTED:
+        df = pd.read_csv(f"{CSV_PATH_LINIT}/{csv}", sep=";")
+        df_array_undetected_L_init.append(df)
 
 # =========================
 # Funzione di plotting
