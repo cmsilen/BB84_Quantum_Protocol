@@ -57,15 +57,15 @@ CSVS_UNDETECTED = [
     "probability_undetected_bitphaseflip.csv"
 ]
 CSVS_LINIT_MISMATCH = [
-    "mismatch_ratios_bitphaseflip_100.csv",
-    "mismatch_ratios_bitphaseflip_300.csv",
-    "mismatch_ratios_bitphaseflip_700.csv",
-    "mismatch_ratios_bitphaseflip_1000.csv"
+    "mismatch_ratios_eavesdropping_bitphaseflip_100.csv",
+    "mismatch_ratios_eavesdropping_bitphaseflip_300.csv",
+    "mismatch_ratios_eavesdropping_bitphaseflip_700.csv",
+    "mismatch_ratios_eavesdropping_bitphaseflip_1000.csv"
 ]
 CSVS_LINIT_UNDETECTED = [
-    "probability_undetected_ideal_100.csv",
-    "probability_undetected_bitflip_300.csv",
-    "probability_undetected_phaseflip_700.csv",
+    "probability_undetected_bitphaseflip_100.csv",
+    "probability_undetected_bitphaseflip_300.csv",
+    "probability_undetected_bitphaseflip_700.csv",
     "probability_undetected_bitphaseflip_1000.csv"
 ]
 
