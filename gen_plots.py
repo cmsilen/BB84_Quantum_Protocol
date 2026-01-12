@@ -15,7 +15,7 @@ os.makedirs(SAVE_PATH, exist_ok=True)
 
 do_mismatch = True
 do_undetected = True
-do_Linit = False
+do_Linit = True
 
 MISMATCH_LABELS = [
     "ideal",
@@ -67,10 +67,10 @@ CSVS_LINIT_MISMATCH = [
     "mismatch_ratios_bitphaseflip_1000.csv"
 ]
 CSVS_LINIT_UNDETECTED = [
-    "probability_undetected_ideal_100.csv",
-    "probability_undetected_bitflip_300.csv",
-    "probability_undetected_phaseflip_700.csv",
-    "probability_undetected_bitphaseflip_1000.csv"
+    "probability_undetected_bitphase_100.csv",
+    "probability_undetected_bitphase_300.csv",
+    "probability_undetected_bitphase_700.csv",
+    "probability_undetected_bitphase_1000.csv"
 ]
 
 ALPHA = 0.25                  # trasparenza banda
