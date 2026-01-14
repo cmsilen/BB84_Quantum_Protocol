@@ -44,7 +44,7 @@ def mismatch_ratio_experiment(eavesdropping_event, bit_flip_event, phase_flip_ev
 
     # calculate the upper and lower value for confidence intervall
     alpha = 0.01  # set value for alpha -> for 99% CI
-    n = len(df_mean)
+    n = len(repetition_r)
     z = norm.ppf(1 - alpha / 2)
 
     cols = ["global_R_miss", "Z_R_miss", "X_R_miss"]
@@ -98,7 +98,7 @@ def probability_undetected_experiment(eavesdropping_event, bit_flip_event, phase
     ).reset_index()
 
     alpha = 0.01  # set value for alpha -> for 99% certainty
-    n = len(df_mean)
+    n = len(repetition_r)
     z = norm.ppf(1 - alpha / 2)
 
     df_std = df.groupby("k")[["undetected"]].std()
